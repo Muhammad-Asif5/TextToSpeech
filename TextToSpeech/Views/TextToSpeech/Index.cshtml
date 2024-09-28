@@ -1,0 +1,118 @@
+﻿@model TTSModel
+
+<div class="container">
+    <div class="card">
+        <div clasinput-validation-errors="card-header">
+            <h3>Text to Speech</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="GenerateSpeech" method="post" id="ttsForm">
+                <div class="form-group">
+                    <label asp-for="SelectedVoice" class="form-label">Select Voice</label>
+                    <select asp-for="SelectedVoice" asp-items="Model.Voices" class="form-control @(ViewData.ModelState["SelectedVoice"]?.Errors.Count > 0 ? "input-error" : "")">
+                        <option value="">-- Select Voice --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Text" class="form-label">Enter Text</label>
+                    <textarea asp-for="Text" class="form-control @(ViewData.ModelState["Text"]?.Errors.Count > 0 ? "input-error" : "")" rows="4" placeholder="Type the text you want to convert to speech"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Generate Speech</button>
+            </form>
+        </div>
+        <div class="card-footer">
+            <audio id="ttsAudio" controls></audio>
+        </div>
+
+        <!-- Full Screen Loader -->
+        <div id="fullScreenLoader" class="loader d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.getElementById('ttsForm').addEventListener('submit', function (event) {
+            // Check if the form is valid
+            if (!$(this).valid()) {
+                event.preventDefault(); // Prevent submission if not valid
+                return; // Stop further execution
+            }
+
+            event.preventDefault(); // Prevent default form submission behavior
+
+            // Show full screen loader
+            document.getElementById('fullScreenLoader').classList.remove('d-none');
+            document.getElementById('ttsAudio').style.display = 'none';
+
+            const formData = new FormData(this);
+
+            // Fetch the generated audio from the server
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    throw new Error('Error generating speech.');
+                }
+            }).then(audioBlob => {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                document.getElementById('ttsAudio').src = audioUrl;
+                document.getElementById('fullScreenLoader').classList.add('d-none');
+                document.getElementById('ttsAudio').style.display = 'block';
+                document.getElementById('ttsAudio').play();
+            }).catch(error => {
+                alert(error.message);
+                document.getElementById('fullScreenLoader').classList.add('d-none');
+            });
+        });
+
+
+    </script>
+    @* <script>
+
+        // In your Javascript (external .js resource or <script> tag)
+        $(document).ready(function () {
+            $('#voices').select2();
+        });
+
+        document.getElementById('ttsForm').addEventListener('submit', async function (event) {
+            event.preventDefault();  // Prevent default form submission behavior
+
+            // Show loading spinner and hide audio
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+            document.getElementById('ttsAudio').style.display = 'none';
+
+            const formData = new FormData(this);
+
+            // Fetch the generated audio from the server
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                document.getElementById('ttsAudio').src = audioUrl;
+
+                // Play the audio and hide spinner
+                document.getElementById('loadingSpinner').classList.add('d-none');
+                document.getElementById('ttsAudio').style.display = 'block';
+                document.getElementById('ttsAudio').play();
+            } else {
+                alert("Error generating speech.");
+                document.getElementById('loadingSpinner').classList.add('d-none');
+            }
+        });
+    </script>
+ *@
+}

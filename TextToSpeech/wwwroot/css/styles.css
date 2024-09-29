@@ -16,12 +16,17 @@ h3 {
     font-weight: 700;
     color: #ffffff;
 }
-
+.card {
+    border: 2px solid rgb(96 32 210);
+}
 .card-header {
     background: linear-gradient(135deg, #2575fc, #6a11cb);
     border-radius: 15px 15px 0 0;
     padding: 20px;
     text-align: center;
+}
+.card-footer {
+    border-top: 1px solid rgb(96 32 210);
 }
 
 .form-group {
@@ -47,7 +52,7 @@ h3 {
 
     .form-select:focus, .form-control:focus {
         outline: none;
-        border-color: #6a11cb;
+        /*border-color: #6a11cb;*/
         box-shadow: 0 0 10px rgba(106, 17, 203, 0.5);
     }
 
@@ -118,6 +123,7 @@ label, button {
     border: 2px solid red;
     background-color: #ffe6e6; /* Light red background */
 }
+
 /* Full-screen loader styles */
 .loader {
     position: fixed;
@@ -132,3 +138,15 @@ label, button {
     z-index: 9999; /* Make sure it covers other elements */
 }
 
+
+.select2-selection__rendered {
+    line-height: 45px !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 45px !important;
+}
+
+.select2-selection__arrow {
+    height: 45px !important;
+}
